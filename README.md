@@ -27,33 +27,48 @@ This library provides a unified interface for managing multiple versions of JSON
 - **`OpenLatest() (JSONataInstance, error)`**: Opens the latest version
 - **`LatestVersion() string`**: Returns the latest version string
 
-### Version Management Usage
+### Versioned Usage
 
 ```go
-// List available versions
-versions := jsonata.AvailableVersions()
-fmt.Println("Available versions:", versions)
+import (
+	"fmt"
+	"log"
 
-// Open a specific version
-instance, err := jsonata.Open("v2.0.6")
-if err != nil {
-    log.Fatal(err)
+	"github.com/jsonata-go/jsonata"
+)
+
+const jsonString = `
+    {
+        "orders": [
+            {"price": 10, "quantity": 3},
+            {"price": 0.5, "quantity": 10},
+            {"price": 100, "quantity": 1}
+        ]
+    }
+`
+
+func main() {
+	// Open a specific version
+	instance, err := jsonata.Open("v2.0.6")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create expression.
+	e, err := instance.Compile("$sum(orders.(price*quantity))", false)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Evaluate.
+	resultJson, err := e.Evaluate([]byte(jsonString), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(string(resultJson))
+	// Output: 135
 }
-
-// Compile an expression
-expr, err := instance.Compile("$.name", false)
-if err != nil {
-    log.Fatal(err)
-}
-
-// Evaluate against JSON input
-input := []byte(`{"name": "John Doe"}`)
-result, err := expr.Evaluate(input, nil)
-if err != nil {
-    log.Fatal(err)
-}
-
-fmt.Println(string(result)) // Output: "John Doe"
 ```
 
 ## Direct Usage
