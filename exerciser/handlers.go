@@ -63,7 +63,7 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(EvaluateResponse{
-			Error: fmt.Sprintf("Failed to open JSONata version %s: %v", version, err),
+			Error: fmt.Sprintf("failed to open JSONata version %s: %v", version, err),
 		})
 		return
 	}
@@ -73,7 +73,7 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(EvaluateResponse{
-			Error: fmt.Sprintf("Compilation error: %v", err),
+			Error: fmt.Sprintf("compilation error: %v", err),
 		})
 		return
 	}
@@ -98,7 +98,7 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 		if err := parseBindings(req.Bindings, bindings); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(EvaluateResponse{
-				Error: fmt.Sprintf("Bindings error: %v", err),
+				Error: fmt.Sprintf("bindings error: %v", err),
 			})
 			return
 		}
@@ -109,7 +109,7 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(EvaluateResponse{
-			Error: fmt.Sprintf("Evaluation error: %v", err),
+			Error: fmt.Sprintf("evaluation error: %v", err),
 		})
 		return
 	}
