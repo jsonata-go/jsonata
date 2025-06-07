@@ -56,15 +56,14 @@ if err != nil {
 fmt.Println(string(result)) // Output: "John Doe"
 ```
 
-## Direct Usage (Legacy)
+## Direct Usage
 
 ```Go
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
-	jsonata "github.com/jsonata-go/jsonata"
+	jsonata "github.com/jsonata-go/jsonata/v206"
 )
 
 const jsonString = `
@@ -78,40 +77,31 @@ const jsonString = `
 `
 
 func main() {
-
-	var data interface{}
-
-	// Decode JSON.
-	err := json.Unmarshal([]byte(jsonString), &data)
+	// Create expression.
+	e, err := jsonata.Compile("$sum(orders.(price*quantity))", false)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Create expression.
-	e := jsonata.MustCompile("$sum(orders.(price*quantity))")
 
 	// Evaluate.
-	res, err := e.Eval(data)
+	resultJson, err := e.Evaluate([]byte(jsonString), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(res)
+	fmt.Println(string(resultJson))
 	// Output: 135
 }
 ```
 
+## API Documentation
+
+For detailed API documentation of the v206 implementation, including all available functions, methods, error handling, and security best practices, see the [v206 API Documentation](v206/API.md).
+
 ## Contributing
 
-We love issues, fixes, and pull requests from everyone. Please run the
-unit-tests, staticcheck, and goimports prior to submitting your PR. By participating in this project, you agree to abide by
-the Blues Inc [code of conduct](https://blues.github.io/opensource/code-of-conduct).
+We love issues, fixes, and pull requests from everyone. Please run the unit-tests, vet, and staticcheck prior to submitting your PR. By participating in this project, you agree to abide by the Blues Inc [code of conduct](https://blues.github.io/opensource/code-of-conduct).
 
 For details on contributions we accept and the process for contributing, see our
 [contribution guide](CONTRIBUTING.md).
 
-In addition to the Go unit tests there is also a test runner that will run against the jsonata-js test
-suite in the [jsonata-test](./jsonata-test) directory. A number of these tests currently fail, but we're working towards feature parity with the jsonata-js reference implementation. Pull requests welcome!
-
-If you would like to contribute to this library a good first issue would be to run the jsonata-test suite,
-and fix any of the tests not passing.

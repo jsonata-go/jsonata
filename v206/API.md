@@ -114,6 +114,74 @@ Parses a JSONata expression with error recovery, attempting to build a partial A
 - `*ASTNode`: Root node of the (possibly partial) AST
 - `error`: Primary syntax error (additional errors may be in AST.Errors)
 
+### SetDefaultMaxDepth
+
+```go
+func SetDefaultMaxDepth(maxDepth int)
+```
+
+Sets the global default maximum recursion depth for all new expressions.
+
+**Purpose:** Provides a way to set a default recursion limit that will be applied to all newly compiled expressions, avoiding the need to call SetMaxDepth on each expression individually.
+
+**Parameters:**
+- `maxDepth` (int): Maximum recursion depth (0 = unlimited, which is the default)
+
+**Example:**
+```go
+// Set a global default of 100 levels for all new expressions
+jsonata.SetDefaultMaxDepth(100)
+
+// This expression will have the 100 level limit automatically
+expr, _ := jsonata.Compile("$.data", false)
+```
+
+### SetDefaultMaxTime
+
+```go
+func SetDefaultMaxTime(maxMs int)
+```
+
+Sets the global default maximum execution time for all new expressions.
+
+**Purpose:** Provides a way to set a default timeout that will be applied to all newly compiled expressions, ensuring consistent timeout behavior across your application.
+
+**Parameters:**
+- `maxMs` (int): Maximum execution time in milliseconds (0 = unlimited, which is the default)
+
+**Example:**
+```go
+// Set a global default of 5 seconds for all new expressions
+jsonata.SetDefaultMaxTime(5000)
+
+// This expression will have the 5 second timeout automatically
+expr, _ := jsonata.Compile("$.data", false)
+```
+
+### SetDefaultMaxRange
+
+```go
+func SetDefaultMaxRange(maxRange int)
+```
+
+Sets the global default maximum size for range expressions for all new expressions.
+
+**Purpose:** Provides a way to set a default range limit that will be applied to all newly compiled expressions, protecting against denial-of-service attacks from large range expressions.
+
+**Parameters:**
+- `maxRange` (int): Maximum allowed range size (0 = unlimited, which is the default)
+
+**Example:**
+```go
+// Set a global default of 10,000 elements for all new expressions
+jsonata.SetDefaultMaxRange(10000)
+
+// This expression will have the range limit automatically
+expr, _ := jsonata.Compile("[1..n]", false)
+```
+
+**Note:** These default settings only affect expressions compiled after the defaults are set. Existing compiled expressions retain their original limits.
+
 ## Types
 
 ### Expression
