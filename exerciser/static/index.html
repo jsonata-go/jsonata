@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONata Exerciser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: #2e3440;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo {
+            height: 30px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Main layout */
+        .main-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .split {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .split-horizontal {
+            flex-direction: row;
+        }
+
+        .split-vertical {
+            flex-direction: column;
+        }
+
+        .gutter {
+            background-color: #e0e0e0;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+
+        .gutter.gutter-horizontal {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
+            cursor: col-resize;
+            width: 10px;
+        }
+
+        .gutter.gutter-vertical {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAFAQMAAABo7865AAAABlBMVEVHcEzMzMzyAv2sAAAAAXRSTlMAQObYZgAAABBJREFUeF5jOAMEEAIEEFwAn3kMwcB6I2AAAAAASUVORK5CYII=');
+            cursor: row-resize;
+            height: 10px;
+        }
+
+        /* Panes */
+        .pane {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pane-header {
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pane-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* CodeMirror styling */
+        .CodeMirror {
+            height: 100%;
+            font-size: 14px;
+        }
+
+        /* Controls */
+        select, button {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: white;
+            font-size: 14px;
+        }
+
+        button {
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        /* Result pane */
+        .result-content {
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            overflow: auto;
+            height: 100%;
+        }
+
+        .result-error {
+            color: #d32f2f;
+        }
+
+        /* Bindings pane */
+        .bindings-pane {
+            transition: all 0.3s ease;
+        }
+
+        .bindings-pane.collapsed {
+            height: 30px !important;
+        }
+
+        .bindings-header {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .bindings-header::before {
+            content: '▼ ';
+            display: inline-block;
+            transition: transform 0.3s;
+        }
+
+        .bindings-header.collapsed::before {
+            transform: rotate(-90deg);
+        }
+
+        /* Loading */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <span>JSONata Exerciser</span>
+        </h1>
+        <div class="header-controls">
+            <span>Version:</span>
+            <select id="version-select">
+                <option value="">Loading...</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div id="main-split" class="split split-horizontal">
+            <div id="left-pane" class="pane">
+                <div id="left-split" class="split split-vertical">
+                    <div id="json-pane" class="pane">
+                        <div class="pane-header">
+                            <span>JSON</span>
+                            <div>
+                                <select id="sample-select">
+                                    <option value="Event">Event</option>
+                                    <option value="Invoice">Invoice</option>
+                                    <option value="Address">Address</option>
+                                    <option value="Schema">Schema</option>
+                                    <option value="Library">Library</option>
+                                    <option value="Bindings">Bindings</option>
+                                </select>
+                                <button id="format-json" title="Format JSON">Format</button>
+                            </div>
+                        </div>
+                        <div class="pane-content">
+                            <textarea id="json-editor"></textarea>
+                        </div>
+                    </div>
+                    <div id="bindings-pane" class="pane bindings-pane collapsed">
+                        <div class="pane-header bindings-header collapsed" id="bindings-header">
+                            <span>Bindings</span>
+                        </div>
+                        <div class="pane-content" id="bindings-content" style="display: none;">
+                            <textarea id="bindings-editor"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="right-pane" class="pane">
+                <div id="right-split" class="split split-vertical">
+                    <div id="jsonata-pane" class="pane">
+                        <div class="pane-header">
+                            <span>JSONata</span>
+                        </div>
+                        <div class="pane-content">
+                            <textarea id="jsonata-editor"></textarea>
+                        </div>
+                    </div>
+                    <div id="result-pane" class="pane">
+                        <div class="pane-header">
+                            <span>Result</span>
+                        </div>
+                        <div class="pane-content">
+                            <div id="result-content" class="result-content">
+                                <span class="loading">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+    <script src="exerciser.js"></script>
+</body>
+</html>
