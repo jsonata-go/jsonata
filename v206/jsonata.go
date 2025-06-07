@@ -163,7 +163,7 @@ func Compile(expr string, recoveryMode bool) (compiledExpr *Expression, compileE
 			default:
 				panicErr = &JSONataError{
 					Code:    "U1003",
-					Message: fmt.Sprintf("Unexpected panic: %v", r),
+					Message: fmt.Sprintf("panic: %v", r),
 					Stack:   getStack(),
 				}
 			}
@@ -366,7 +366,7 @@ func (e *Expression) Evaluate(inputJSON []byte, bindings map[string]interface{})
 			default:
 				evalErr = &JSONataError{
 					Code:    "U1003",
-					Message: fmt.Sprintf("Unexpected panic during evaluation: %v", r),
+					Message: fmt.Sprintf("panic during evaluation: %v", r),
 					Stack:   getStack(),
 				}
 			}
@@ -632,7 +632,7 @@ func checkTimeout(environment *Frame) error {
 		return &JSONataError{
 			Code:    "U1002",
 			Stack:   getStack(),
-			Message: "Evaluation timeout exceeded",
+			Message: "evaluation timeout exceeded",
 		}
 	}
 	return nil

@@ -1483,7 +1483,7 @@ func initDateTime() *DateTimeModule {
 					// Return error for numbers too large to parse from words
 					return nil, &JSONataError{
 						Code:    "D3100",
-						Message: "Number is too large to parse from words",
+						Message: "number is too large to parse from words",
 						Value:   value,
 					}
 				}
