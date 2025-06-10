@@ -3,9 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"net/http"
-	"strings"
 
 	"github.com/jsonata-go/jsonata"
 )
@@ -93,10 +91,8 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 
 	// Parse bindings if provided
 	bindings := make(map[string]interface{})
-	if req.Bindings != "" && req.Bindings != defaultBindingsText {
-		// Try to evaluate the bindings as a JavaScript-like object
-		// For now, we'll support a simple subset
-		if err := parseBindings(req.Bindings, bindings); err != nil {
+	if req.Bindings != "" {
+		if err := json.Unmarshal([]byte(req.Bindings), &bindings); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(EvaluateResponse{
 				Error: fmt.Sprintf("bindings error: %v", err),
@@ -120,92 +116,6 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(EvaluateResponse{
 		Result: json.RawMessage(result),
 	})
-}
-
-// parseBindings parses a JavaScript-like bindings object
-// This is a simplified parser that handles basic cases
-func parseBindings(bindingsStr string, bindings map[string]interface{}) error {
-	// Remove comments
-	lines := strings.Split(bindingsStr, "\n")
-	var cleanedLines []string
-	for _, line := range lines {
-		if idx := strings.Index(line, "//"); idx >= 0 {
-			line = line[:idx]
-		}
-		cleanedLines = append(cleanedLines, line)
-	}
-	cleaned := strings.Join(cleanedLines, "\n")
-
-	// Check if it looks like a simple object
-	cleaned = strings.TrimSpace(cleaned)
-	if !strings.HasPrefix(cleaned, "{") || !strings.HasSuffix(cleaned, "}") {
-		return fmt.Errorf("bindings must be an object")
-	}
-
-	// Extract the content
-	content := cleaned[1 : len(cleaned)-1]
-
-	// Parse simple key-value pairs
-	// This is a very basic parser that handles:
-	// - pi: 3.14159...
-	// - cosine: Math.cos (converts to a Go function)
-	pairs := strings.Split(content, ",")
-	for _, pair := range pairs {
-		pair = strings.TrimSpace(pair)
-		if pair == "" {
-			continue
-		}
-
-		parts := strings.SplitN(pair, ":", 2)
-		if len(parts) != 2 {
-			continue
-		}
-
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-
-		// Handle different value types
-		switch {
-		case value == "Math.cos":
-			// Map Math.cos to Go's math.Cos
-			bindings[key] = func(args []interface{}) (interface{}, error) {
-				if len(args) != 1 {
-					return nil, fmt.Errorf("cos expects 1 argument")
-				}
-				switch v := args[0].(type) {
-				case float64:
-					return math.Cos(v), nil
-				case int:
-					return math.Cos(float64(v)), nil
-				default:
-					return nil, fmt.Errorf("cos expects a number")
-				}
-			}
-		case value == "Math.sin":
-			// Map Math.sin to Go's math.Sin
-			bindings[key] = func(args []interface{}) (interface{}, error) {
-				if len(args) != 1 {
-					return nil, fmt.Errorf("sin expects 1 argument")
-				}
-				switch v := args[0].(type) {
-				case float64:
-					return math.Sin(v), nil
-				case int:
-					return math.Sin(float64(v)), nil
-				default:
-					return nil, fmt.Errorf("sin expects a number")
-				}
-			}
-		default:
-			// Try to parse as JSON value
-			var val interface{}
-			if err := json.Unmarshal([]byte(value), &val); err == nil {
-				bindings[key] = val
-			}
-		}
-	}
-
-	return nil
 }
 
 // handleSamples returns the list of sample data

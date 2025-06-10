@@ -61,20 +61,11 @@ var samples = []Sample{
 }`,
 		Bindings: defaultBindingsText,
 	},
-	{
-		Name:    "Bindings",
-		JSONata: "$cosine(angle * $pi/180)\n\n/*\nJSONata can be extended by binding variables to external functions and values.\nExpand the 'Bindings' panel to bind variables to Javascript code for use in your expression.\nThis is useful for experimenting with functions that are not built into JSONata.\n*/",
-		Bindings: `{
-  pi: 3.1415926535898,
-  cosine: Math.cos
-}`,
-	},
 }
 
-const defaultBindingsText = `// Define bindings as properties of the below object
-// Its possible to write any javascript expression here that evaluates to an object
+const defaultBindingsText = `
 {
- // name: value 
+ "name": "value"
 }`
 
 func main() {
@@ -444,7 +435,4 @@ func initializeSamples() {
     ]
   }
 }`)
-
-	// Bindings sample data
-	samples[6].JSON = json.RawMessage(`{"angle": 60}`)
 }

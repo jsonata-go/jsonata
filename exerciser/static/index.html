@@ -157,26 +157,7 @@
 
         /* Bindings pane */
         .bindings-pane {
-            transition: all 0.3s ease;
-        }
-
-        .bindings-pane.collapsed {
-            height: 30px !important;
-        }
-
-        .bindings-header {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .bindings-header::before {
-            content: '▼ ';
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-
-        .bindings-header.collapsed::before {
-            transform: rotate(-90deg);
+            /* No special styles needed anymore */
         }
 
         /* Loading */
@@ -217,7 +198,6 @@
                                     <option value="Address">Address</option>
                                     <option value="Schema">Schema</option>
                                     <option value="Library">Library</option>
-                                    <option value="Bindings">Bindings</option>
                                 </select>
                                 <button id="format-json" title="Format JSON">Format</button>
                             </div>
@@ -226,11 +206,11 @@
                             <textarea id="json-editor"></textarea>
                         </div>
                     </div>
-                    <div id="bindings-pane" class="pane bindings-pane collapsed">
-                        <div class="pane-header bindings-header collapsed" id="bindings-header">
+                    <div id="bindings-pane" class="pane bindings-pane">
+                        <div class="pane-header" id="bindings-header">
                             <span>Bindings</span>
                         </div>
-                        <div class="pane-content" id="bindings-content" style="display: none;">
+                        <div class="pane-content" id="bindings-content">
                             <textarea id="bindings-editor"></textarea>
                         </div>
                     </div>

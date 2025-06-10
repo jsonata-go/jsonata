@@ -131,8 +131,6 @@ function setupEventHandlers() {
     // Format JSON button
     document.getElementById('format-json').addEventListener('click', formatJSON);
 
-    // Bindings pane toggle
-    document.getElementById('bindings-header').addEventListener('click', toggleBindings);
 }
 
 // Load a sample
@@ -162,27 +160,6 @@ function formatJSON() {
     }
 }
 
-// Toggle bindings pane
-function toggleBindings() {
-    const pane = document.getElementById('bindings-pane');
-    const header = document.getElementById('bindings-header');
-    const content = document.getElementById('bindings-content');
-
-    if (pane.classList.contains('collapsed')) {
-        pane.classList.remove('collapsed');
-        header.classList.remove('collapsed');
-        content.style.display = 'block';
-        
-        // Trigger resize after animation
-        setTimeout(() => {
-            bindingsEditor.refresh();
-        }, 300);
-    } else {
-        pane.classList.add('collapsed');
-        header.classList.add('collapsed');
-        content.style.display = 'none';
-    }
-}
 
 // Debounce evaluation
 function debounceEvaluate() {
