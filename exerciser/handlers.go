@@ -78,10 +78,11 @@ func handleEvaluate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Initialize jsonata
-	expr.RegisterFunction("good", func(args []any) (any, error) { return "good result", nil }, "<:x>")
-
-	expr.RegisterFunction("bad", func(args []any) (any, error) { return nil, instance.MakeError("", "bad result {bad}") }, "<:x>")
+	// Initialize some test expressions
+	expr.RegisterFunction("doNotRoute", func(args []any) (any, error) { return "", instance.MakeError("", "{do-not-route}") }, "<:x>")
+	expr.RegisterFunction("addToFleet", func(args []any) (any, error) { return "", instance.MakeError("", "{add-to-fleet}") }, "<:x>")
+	expr.RegisterFunction("removeFromFleet", func(args []any) (any, error) { return "", instance.MakeError("", "{remove-from-fleet}") }, "<:x>")
+	expr.RegisterFunction("leaveFleetAlone", func(args []any) (any, error) { return "", instance.MakeError("", "{leave-fleet-alone}") }, "<:x>")
 
 	// ($loop := function($n) { $loop($n + 1) }; $loop(1))
 	expr.SetMaxTime(1000) // Maximum execution time in milliseconds
