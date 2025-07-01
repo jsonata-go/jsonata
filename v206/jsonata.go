@@ -2144,13 +2144,53 @@ func evaluateNumericExpression(lhs, rhs interface{}, op string) (interface{}, er
 	switch v := lhs.(type) {
 	case float64:
 		lhsNum = v
+	case float32:
+		lhsNum = float64(v)
 	case int:
+		lhsNum = float64(v)
+	case int8:
+		lhsNum = float64(v)
+	case int16:
+		lhsNum = float64(v)
+	case int32:
+		lhsNum = float64(v)
+	case int64:
+		lhsNum = float64(v)
+	case uint:
+		lhsNum = float64(v)
+	case uint8:
+		lhsNum = float64(v)
+	case uint16:
+		lhsNum = float64(v)
+	case uint32:
+		lhsNum = float64(v)
+	case uint64:
 		lhsNum = float64(v)
 	}
 	switch v := rhs.(type) {
 	case float64:
 		rhsNum = v
+	case float32:
+		rhsNum = float64(v)
 	case int:
+		rhsNum = float64(v)
+	case int8:
+		rhsNum = float64(v)
+	case int16:
+		rhsNum = float64(v)
+	case int32:
+		rhsNum = float64(v)
+	case int64:
+		rhsNum = float64(v)
+	case uint:
+		rhsNum = float64(v)
+	case uint8:
+		rhsNum = float64(v)
+	case uint16:
+		rhsNum = float64(v)
+	case uint32:
+		rhsNum = float64(v)
+	case uint64:
 		rhsNum = float64(v)
 	}
 	var result float64
