@@ -4402,7 +4402,7 @@ func init() {
 	staticFrame.bind("append", defineFunction(fn.appendFunc, "<xx:a>"))
 	staticFrame.bind("exists", defineFunction(fn.existsFunc, "<x:b>"))
 	staticFrame.bind("spread", defineFunction(fn.spreadFunc, "<x-:a<o>>"))
-	staticFrame.bind("merge", defineFunction(fn.mergeFunc, "<a<o>:o>"))
+	staticFrame.bind("merge", defineFunction(fn.mergeFunc, "<x:o>"))
 	staticFrame.bind("reverse", defineFunction(fn.reverseFunc, "<a:a>"))
 	staticFrame.bind("each", defineFunction(fn.eachFunc, "<o-f:a>"))
 	staticFrame.bind("error", defineFunction(fn.errorFunc, "<s?:x>"))
